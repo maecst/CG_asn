@@ -524,7 +524,6 @@ namespace asgn5v1
             if (e.Button == transupbtn)
             {
                 timer.Stop();
-                centreToBaseline += -25;
                 ctrans = translate(ctrans, 0, -25, 0);
                 Refresh();
             }
@@ -532,7 +531,6 @@ namespace asgn5v1
             if (e.Button == transdownbtn)
             {
                 timer.Stop();
-                centreToBaseline += 25;
                 ctrans = translate(ctrans, 0, 25, 0);
                 Refresh();
             }
@@ -570,12 +568,14 @@ namespace asgn5v1
 
             if (e.Button == rotxbtn)
             {
+                timer.Stop();
                 timer.Interval = 30;       // time in milliseconds
                 timer.Tick += rotateInX;
                 timer.Start();
             }
             if (e.Button == rotybtn)
             {
+                timer.Stop();
                 timer.Interval = 30;       // time in milliseconds
                 timer.Tick += rotateInY;
                 timer.Start();
@@ -583,6 +583,7 @@ namespace asgn5v1
 
             if (e.Button == rotzbtn)
             {
+                timer.Stop();
                 timer.Interval = 30;       // time in milliseconds
                 timer.Tick += rotateInZ;
                 timer.Start();
@@ -591,31 +592,24 @@ namespace asgn5v1
             if (e.Button == shearleftbtn)
             {
                 timer.Stop();
-                int index = getIndexOfBaseline();
+                double Ydistance = centreToBaseline;
 
-                ctrans = translate(ctrans, 0, -centreToBaseline, 0);
-                Console.WriteLine("\ne.Button == sheerleftbtn");
-                Console.WriteLine("centreToBaseline: " + centreToBaseline);
-                Console.WriteLine("scrnpts[index,1]: " + scrnpts[index, 1]);
-
+                ctrans = translate(ctrans, 0, -Ydistance, 0);
                 ctrans = shear(ctrans, 'l');
-                ctrans = translate(ctrans, 0, centreToBaseline, 0);
-                Console.WriteLine("\ne.Button == sheerleftbtn");
-                Console.WriteLine("centreToBaseline: " + centreToBaseline);
-                Console.WriteLine("scrnpts[index,1]: " + scrnpts[index, 1]);
-
+                ctrans = translate(ctrans, 0, Ydistance, 0);
                 Refresh();
             }
 
             if (e.Button == shearrightbtn)
             {
                 timer.Stop();
-                int index = getIndexOfBaseline();
-
-                ctrans = translate(ctrans, 0, -scrnpts[index, 1], 0);
+                double Ydistance = centreToBaseline;
+                
+                ctrans = translate(ctrans, 0, -Ydistance, 0);
                 ctrans = shear(ctrans, 'r');
-                ctrans = translate(ctrans, 0, scrnpts[index, 1], 0);
+                ctrans = translate(ctrans, 0, Ydistance, 0);
                 Refresh();
+
             }
 
             if (e.Button == resetbtn)
@@ -674,7 +668,7 @@ namespace asgn5v1
             // translate shape to middle of frame
             ctrans = translate(ctrans, midpointX, midpointY, shapeZ);
 
-            centreToBaseline += midpointY;
+            //centreToBaseline += midpointY;
             Console.WriteLine("BuildInitialShape() 3");
             Console.WriteLine("centreToBaseline: " + centreToBaseline);
             Console.WriteLine("scrnpts[index,1]: " + scrnpts[index, 1]);
@@ -722,7 +716,7 @@ namespace asgn5v1
                 { x, y, z, 1 }
             };
 
-            //centreToBaseline += y;
+            centreToBaseline += y;
             return multiply4x4(ctrans, translationMatrix);
         }
 

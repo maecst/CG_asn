@@ -524,6 +524,7 @@ namespace asgn5v1
             if (e.Button == transupbtn)
             {
                 timer.Stop();
+                centreToBaseline += -25;
                 ctrans = translate(ctrans, 0, -25, 0);
                 Refresh();
             }
@@ -531,6 +532,7 @@ namespace asgn5v1
             if (e.Button == transdownbtn)
             {
                 timer.Stop();
+                centreToBaseline += 25;
                 ctrans = translate(ctrans, 0, 25, 0);
                 Refresh();
             }
@@ -672,7 +674,7 @@ namespace asgn5v1
             // translate shape to middle of frame
             ctrans = translate(ctrans, midpointX, midpointY, shapeZ);
 
-            //centreToBaseline += midpointY;
+            centreToBaseline += midpointY;
             Console.WriteLine("BuildInitialShape() 3");
             Console.WriteLine("centreToBaseline: " + centreToBaseline);
             Console.WriteLine("scrnpts[index,1]: " + scrnpts[index, 1]);
@@ -720,7 +722,7 @@ namespace asgn5v1
                 { x, y, z, 1 }
             };
 
-            centreToBaseline += y;
+            //centreToBaseline += y;
             return multiply4x4(ctrans, translationMatrix);
         }
 
@@ -756,7 +758,6 @@ namespace asgn5v1
             };
 
             centreToBaseline = centreToBaseline * s;
-
             return multiply4x4(ctrans, scalorMatrix);
         }
 

@@ -354,7 +354,6 @@ namespace asgn5v1
             {
                 // create the screen coordinates:
                 // scrnpts = vertices * ctrans
-
                 for (int i = 0; i < numpts; i++)
                 {
                     for (int j = 0; j < 4; j++)
@@ -367,7 +366,6 @@ namespace asgn5v1
                 }
 
                 // now draw the lines
-
                 for (int i = 0; i < numlines; i++)
                 {
                     grfx.DrawLine(pen, (int)scrnpts[lines[i, 0], 0], (int)scrnpts[lines[i, 0], 1],
@@ -501,155 +499,32 @@ namespace asgn5v1
             }
         }// end of setIdentity
 
-
         private void Transformer_Load(object sender, System.EventArgs e)
         {
 
         }
 
-        private void toolBar1_ButtonClick(object sender, System.Windows.Forms.ToolBarButtonClickEventArgs e)
+        /**
+ *  Take the intial set of vertices and present the shape in the middle of
+ *  the screen, right side up, and scaled so that its height is half the
+ *  screen height
+ */
+        void BuildInitialShape()
         {
-            if (e.Button == transleftbtn)
-            {
-                timer.Stop();
-                ctrans = translate(ctrans, -50, 0, 0);
-                Refresh();
-            }
-            if (e.Button == transrightbtn)
-            {
-                timer.Stop();
-                ctrans = translate(ctrans, 50, 0, 0);
-                Refresh();
-            }
-            if (e.Button == transupbtn)
-            {
-                timer.Stop();
-                ctrans = translate(ctrans, 0, -25, 0);
-                Refresh();
-            }
-
-            if (e.Button == transdownbtn)
-            {
-                timer.Stop();
-                ctrans = translate(ctrans, 0, 25, 0);
-                Refresh();
-            }
-            if (e.Button == scaleupbtn)
-            {
-                timer.Stop();
-                ctrans = translate(ctrans, -scrnpts[0, 0], -scrnpts[0, 1], -scrnpts[0,2]);
-                ctrans = scale(ctrans, 1.1);
-                ctrans = translate(ctrans, scrnpts[0, 0], scrnpts[0, 1], scrnpts[0,2]);
-                Refresh();
-            }
-            if (e.Button == scaledownbtn)
-            {
-                timer.Stop();
-                ctrans = translate(ctrans, -scrnpts[0, 0], -scrnpts[0, 1], -scrnpts[0,2]);
-                ctrans = scale(ctrans, 0.9);
-                ctrans = translate(ctrans, scrnpts[0, 0], scrnpts[0, 1], scrnpts[0,2]);
-                Refresh();
-            }
-            if (e.Button == rotxby1btn)
-            {
-                timer.Stop();
-                rotateInX(sender, e);
-            }
-            if (e.Button == rotyby1btn)
-            {
-                timer.Stop();
-                rotateInY(sender, e);
-            }
-            if (e.Button == rotzby1btn)
-            {
-                timer.Stop();
-                rotateInZ(sender, e);
-            }
-
-            if (e.Button == rotxbtn)
-            {
-                timer.Stop();
-                timer.Interval = 30;       // time in milliseconds
-                timer.Tick += rotateInX;
-                timer.Start();
-            }
-            if (e.Button == rotybtn)
-            {
-                timer.Stop();
-                timer.Interval = 30;       // time in milliseconds
-                timer.Tick += rotateInY;
-                timer.Start();
-            }
-
-            if (e.Button == rotzbtn)
-            {
-                timer.Stop();
-                timer.Interval = 30;       // time in milliseconds
-                timer.Tick += rotateInZ;
-                timer.Start();
-            }
-
-            if (e.Button == shearleftbtn)
-            {
-                timer.Stop();
-                double Ydistance = centreToBaseline;
-
-                ctrans = translate(ctrans, 0, -Ydistance, 0);
-                ctrans = shear(ctrans, 'l');
-                ctrans = translate(ctrans, 0, Ydistance, 0);
-                Refresh();
-            }
-
-            if (e.Button == shearrightbtn)
-            {
-                timer.Stop();
-                double Ydistance = centreToBaseline;
-                
-                ctrans = translate(ctrans, 0, -Ydistance, 0);
-                ctrans = shear(ctrans, 'r');
-                ctrans = translate(ctrans, 0, Ydistance, 0);
-                Refresh();
-
-            }
-
-            if (e.Button == resetbtn)
-            {
-                timer.Stop();
-                RestoreInitialImage();
-            }
-
-            if (e.Button == exitbtn)
-            {
-                timer.Stop();
-                Close();
-            }
-
-        }
-
-
-        // some function
-        void BuildInitialShape() {
-
             // width and height of initial shape
             const int initialSize = 20;
-
-            // get initial distance of centre of shape from baseline (y = 0)
-
-            int index = getIndexOfBaseline();
-            
-            Console.WriteLine("BuildInitialShape() 1");
-            Console.WriteLine("centreToBaseline: " + centreToBaseline);
-            Console.WriteLine("scrnpts[index,1]: " + scrnpts[index, 1]);
 
             // get midpoints for frame and shape
             double midpointX = this.ClientSize.Width / 2.0 - toolBar1Width / 2.0;
             double midpointY = this.ClientSize.Height / 2.0;
-            double shapeX = vertices[0,0];
-            double shapeY = vertices[0,1];
-            double shapeZ = vertices[0,2];
+            double shapeX = vertices[0, 0];
+            double shapeY = vertices[0, 1];
+            double shapeZ = vertices[0, 2];
 
             // translate midpoint of shape to (0,0,0)
             ctrans = translate(ctrans, -shapeX, -shapeY, -shapeZ);
+
+            // get distance from the centre of the shape to the baseline (y = 0)
             centreToBaseline = vertices[0, 1];
 
             // reflect shape about the x-axis
@@ -658,38 +533,154 @@ namespace asgn5v1
             // scale shape to be half height of frame
             double scalor = midpointY / initialSize;
             ctrans = scale(ctrans, scalor);
-            //centreToBaseline = centreToBaseline * scalor;
-
-            Console.WriteLine("BuildInitialShape() 2");
-            Console.WriteLine("scalor: " + scalor);
-            Console.WriteLine("centreToBaseline: " + centreToBaseline);
-            Console.WriteLine("scrnpts[index,1]: " + scrnpts[index, 1]);
 
             // translate shape to middle of frame
             ctrans = translate(ctrans, midpointX, midpointY, shapeZ);
-
-            //centreToBaseline += midpointY;
-            Console.WriteLine("BuildInitialShape() 3");
-            Console.WriteLine("centreToBaseline: " + centreToBaseline);
-            Console.WriteLine("scrnpts[index,1]: " + scrnpts[index, 1]);
         }
 
-        int getIndexOfBaseline()
+        private void toolBar1_ButtonClick(object sender, System.Windows.Forms.ToolBarButtonClickEventArgs e)
         {
-            int index = 0;
-
-            for (int i = 0; i < numpts; i++)
+            if (e.Button == transleftbtn)
             {
-                if (vertices[i, 1] == 0)
-                {
-                    index = i;
-                }
+                timer.Dispose();
+                ctrans = translate(ctrans, -50, 0, 0);
+                Refresh();
             }
-            return index;
+            if (e.Button == transrightbtn)
+            {
+                timer.Dispose();
+                ctrans = translate(ctrans, 50, 0, 0);
+                Refresh();
+            }
+            if (e.Button == transupbtn)
+            {
+                timer.Dispose();
+                ctrans = translate(ctrans, 0, -25, 0);
+                Refresh();
+            }
+
+            if (e.Button == transdownbtn)
+            {
+                timer.Dispose();
+                ctrans = translate(ctrans, 0, 25, 0);
+                Refresh();
+            }
+            if (e.Button == scaleupbtn)
+            {
+                timer.Dispose();
+                ctrans = translate(ctrans, -scrnpts[0, 0], -scrnpts[0, 1], -scrnpts[0,2]);
+                ctrans = scale(ctrans, 1.1);
+                ctrans = translate(ctrans, scrnpts[0, 0], scrnpts[0, 1], scrnpts[0,2]);
+                Refresh();
+            }
+            if (e.Button == scaledownbtn)
+            {
+                timer.Dispose();
+                ctrans = translate(ctrans, -scrnpts[0, 0], -scrnpts[0, 1], -scrnpts[0,2]);
+                ctrans = scale(ctrans, 0.9);
+                ctrans = translate(ctrans, scrnpts[0, 0], scrnpts[0, 1], scrnpts[0,2]);
+                Refresh();
+            }
+            if (e.Button == rotxby1btn)
+            {
+                timer.Dispose();
+                rotateInX(sender, e);
+            }
+            if (e.Button == rotyby1btn)
+            {
+                timer.Dispose();
+                rotateInY(sender, e);
+            }
+            if (e.Button == rotzby1btn)
+            {
+                timer.Dispose();
+                rotateInZ(sender, e);
+            }
+            if (e.Button == rotxbtn)
+            {
+                timer.Dispose();
+                timer.Interval = 30;       // time in milliseconds
+                timer.Tick += rotateInX;
+                timer.Start();
+            }
+            if (e.Button == rotybtn)
+            {
+                timer.Dispose();
+                timer.Interval = 30;       // time in milliseconds
+                timer.Tick += rotateInY;
+                timer.Start();
+            }
+
+            if (e.Button == rotzbtn)
+            {
+                timer.Dispose();
+                timer.Interval = 30;       // time in milliseconds
+                timer.Tick += rotateInZ;
+                timer.Start();
+            }
+            if (e.Button == shearleftbtn)
+            {
+                timer.Dispose();
+                double Ydistance = centreToBaseline;
+
+                ctrans = translate(ctrans, 0, -Ydistance, 0);
+                ctrans = shear(ctrans, 'l');
+                ctrans = translate(ctrans, 0, Ydistance, 0);
+                Refresh();
+            }
+            if (e.Button == shearrightbtn)
+            {
+                timer.Dispose();
+                double Ydistance = centreToBaseline;
+                
+                ctrans = translate(ctrans, 0, -Ydistance, 0);
+                ctrans = shear(ctrans, 'r');
+                ctrans = translate(ctrans, 0, Ydistance, 0);
+                Refresh();
+            }
+            if (e.Button == resetbtn)
+            {
+                timer.Dispose();
+                RestoreInitialImage();
+            }
+            if (e.Button == exitbtn)
+            {
+                timer.Dispose();
+                Close();
+            }
         }
+
+        #region rotationHelpers
+        /**
+         *  Helper methods used in single and continuous rotations
+         */
+        void rotateInX(object sender, EventArgs e)
+        {
+            ctrans = translate(ctrans, -scrnpts[0, 0], -scrnpts[0, 1], -scrnpts[0, 2]);
+            ctrans = rotate(ctrans, 'x');
+            ctrans = translate(ctrans, scrnpts[0, 0], scrnpts[0, 1], scrnpts[0, 2]);
+            Refresh();
+        }
+        void rotateInY(object sender, EventArgs e)
+        {
+            ctrans = translate(ctrans, -scrnpts[0, 0], -scrnpts[0, 1], -scrnpts[0, 2]);
+            ctrans = rotate(ctrans, 'y');
+            ctrans = translate(ctrans, scrnpts[0, 0], scrnpts[0, 1], scrnpts[0, 2]);
+            Refresh();
+        }
+        void rotateInZ(object sender, EventArgs e)
+        {
+            ctrans = translate(ctrans, -scrnpts[0, 0], -scrnpts[0, 1], -scrnpts[0, 2]);
+            ctrans = rotate(ctrans, 'z');
+            ctrans = translate(ctrans, scrnpts[0, 0], scrnpts[0, 1], scrnpts[0, 2]);
+            Refresh();
+        }
+        #endregion
 
         #region transformations
-
+        /**
+         *  Helper method for multiplying two 4x4 matrices.
+         */
         double[,] multiply4x4(double[,] matrix1, double[,] matrix2)
         {
             double[,] tempMatrix = new double[4,4];
@@ -707,6 +698,9 @@ namespace asgn5v1
             return tempMatrix;
         }
 
+        /**
+         *  Translation matrix
+         */
         double[,] translate(double[,] ctrans, double x, double y, double z)
         {
             double[,] translationMatrix = new double[,] 
@@ -720,6 +714,9 @@ namespace asgn5v1
             return multiply4x4(ctrans, translationMatrix);
         }
 
+        /**
+         *  Reflection matrix
+         */
         double[,] reflect(double[,] ctrans, char axis = 'x')
         {
 
@@ -733,7 +730,6 @@ namespace asgn5v1
                 { 0, 0, 0, 1 }
             };
 
-
             if (axis == 'y') {
                 x = -1;
                 y =  1;
@@ -742,6 +738,9 @@ namespace asgn5v1
             return multiply4x4(ctrans, reflectionMatrix);
         }
 
+        /**
+         *  Scaling matrix
+         */
         double[,] scale(double[,] ctrans, double s)
         {
             double[,] scalorMatrix = new double[,]
@@ -755,6 +754,9 @@ namespace asgn5v1
             return multiply4x4(ctrans, scalorMatrix);
         }
 
+        /**
+         *  Rotation matrix
+         */
         double[,] rotate(double[,] ctrans, char axis = 'x')
         {
             // rotation angle in radians
@@ -793,6 +795,9 @@ namespace asgn5v1
             return multiply4x4(ctrans, rotationMatrix);
         }
 
+        /**
+         *  Shearing matrix
+         */
         double[,] shear(double[,] ctrans, char dir = 'r')
         {
             double r = -0.1;
@@ -808,30 +813,6 @@ namespace asgn5v1
             };
 
             return multiply4x4(ctrans, shearingMatrix);
-        }
-
-        void rotateInX(object sender, EventArgs e)
-        {
-            ctrans = translate(ctrans, -scrnpts[0, 0], -scrnpts[0, 1], -scrnpts[0, 2]);
-            ctrans = rotate(ctrans, 'x');
-            ctrans = translate(ctrans, scrnpts[0, 0], scrnpts[0, 1], scrnpts[0, 2]);
-            Refresh();
-        }
-
-        void rotateInY(object sender, EventArgs e)
-        {
-            ctrans = translate(ctrans, -scrnpts[0, 0], -scrnpts[0, 1], -scrnpts[0, 2]);
-            ctrans = rotate(ctrans, 'y');
-            ctrans = translate(ctrans, scrnpts[0, 0], scrnpts[0, 1], scrnpts[0, 2]);
-            Refresh();
-        }
-
-        void rotateInZ(object sender, EventArgs e)
-        {
-            ctrans = translate(ctrans, -scrnpts[0, 0], -scrnpts[0, 1], -scrnpts[0, 2]);
-            ctrans = rotate(ctrans, 'z');
-            ctrans = translate(ctrans, scrnpts[0, 0], scrnpts[0, 1], scrnpts[0, 2]);
-            Refresh();
         }
         #endregion
 
